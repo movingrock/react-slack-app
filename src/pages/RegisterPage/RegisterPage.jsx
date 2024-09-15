@@ -24,6 +24,7 @@ const RegisterPage = () => {
 
   const onSubmit = async (data) => {
     try {
+      setLoading(true);
       const createdUser = await createUserWithEmailAndPassword(
         auth,
         data.email,
