@@ -38,12 +38,7 @@ const LoginPage = () => {
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          name="email"
-          id="email"
-          {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
-        />
+        <input type="email" name="email" id="email" {...register("email", { required: true, pattern: /^\S+@\S+$/i })} />
         {errors.email && <p>This email field is required</p>}
 
         <label htmlFor="password">Password</label>
@@ -53,18 +48,11 @@ const LoginPage = () => {
           id="password"
           {...register("password", { required: true, minLength: 6 })}
         />
-        {errors.password && errors.password.type === "required" && (
-          <p>This password field is required</p>
-        )}
-        {errors.password && errors.password.type === "minLength" && (
-          <p>Password must have at least 6 characters</p>
-        )}
+        {errors.password && errors.password.type === "required" && <p>This password field is required</p>}
+        {errors.password && errors.password.type === "minLength" && <p>Password must have at least 6 characters</p>}
         {errorFromSubmit && <p>{errorFromSubmit}</p>}
         <input type="submit" disabled={loading} />
-        <Link
-          to={"/register"}
-          style={{ color: "gray", textDecoration: "none" }}
-        >
+        <Link to={"/register"} style={{ color: "gray", textDecoration: "none" }}>
           아직 아이디가 없다면...
         </Link>
       </form>

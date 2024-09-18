@@ -18,12 +18,11 @@ function App() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         navigate("/");
-        console.log(user);
         dispatch(
           setUser({
             uid: user.uid,
             displayName: user.displayName,
-            photoUrl: user.photoURL,
+            photoURL: user.photoURL,
           })
         );
       } else {
