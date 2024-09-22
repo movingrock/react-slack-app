@@ -23,13 +23,17 @@ const MessageHeader = () => {
             <InputGroup.Text>
               <AiOutlineSearch />
             </InputGroup.Text>
-            <FormControl onChange placeholder="Search Messages" />
+            <FormControl placeholder="Search Messages" />
           </InputGroup>
         </Col>
       </Row>
 
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <Image roundedCircle src={currentChatRoom?.createdBy.image} style={{ width: 30, height: 30, marginRight: 7 }} />
+        <Image
+          roundedCircle
+          src={currentChatRoom?.createdBy.image}
+          style={{ width: 30, height: 30, marginRight: 7 }}
+        />
         <p>{currentChatRoom?.createdBy.name}</p>
       </div>
     </div>
