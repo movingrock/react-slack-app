@@ -3,7 +3,7 @@ import { Col, FormControl, Image, InputGroup, Row } from "react-bootstrap";
 import { AiOutlineSearch } from "react-icons/ai";
 import { useSelector } from "react-redux";
 
-const MessageHeader = () => {
+const MessageHeader = ({ handleSearchChange }) => {
   const { currentChatRoom } = useSelector((state) => state.chatRoom);
   return (
     <div
@@ -23,17 +23,13 @@ const MessageHeader = () => {
             <InputGroup.Text>
               <AiOutlineSearch />
             </InputGroup.Text>
-            <FormControl placeholder="Search Messages" />
+            <FormControl onChange={handleSearchChange} placeholder="Search Messages" />
           </InputGroup>
         </Col>
       </Row>
 
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <Image
-          roundedCircle
-          src={currentChatRoom?.createdBy.image}
-          style={{ width: 30, height: 30, marginRight: 7 }}
-        />
+        <Image roundedCircle src={currentChatRoom?.createdBy.image} style={{ width: 30, height: 30, marginRight: 7 }} />
         <p>{currentChatRoom?.createdBy.name}</p>
       </div>
     </div>

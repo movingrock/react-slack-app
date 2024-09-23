@@ -10,6 +10,9 @@ const MainPanel = () => {
   const messagesRef = dbRef(db, "messages");
   const [messages, setMessages] = useState([]);
   const [messagesLoading, setMessagesLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   const { currentChatRoom } = useSelector((state) => state.chatRoom);
   const { currentUser } = useSelector((state) => state.user);
@@ -20,6 +23,15 @@ const MainPanel = () => {
       off(messagesRef);
     };
   }, [currentChatRoom.id]);
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+    setSearchLoading(true);
+  };
+
+  const handleSearchMessage = (searchTerm) => {
+    // const
+  };
 
   const addMessagesListner = (chatRoomId) => {
     let messagesArray = [];
@@ -36,15 +48,13 @@ const MainPanel = () => {
   const renderMessages = (messages) => {
     return (
       messages.length > 0 &&
-      messages.map((message) => (
-        <Message key={message.timestamp} message={message} user={currentUser} />
-      ))
+      messages.map((message) => <Message key={message.timestamp} message={message} user={currentUser} />)
     );
   };
 
   return (
     <div style={{ padding: "2rem 2rem 0 2rem" }}>
-      <MessageHeader />
+      <MessageHeader handleSearchChange={handleSearchChange} />
 
       <div
         style={{

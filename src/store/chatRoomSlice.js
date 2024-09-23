@@ -26,10 +26,10 @@ export const chatRoomSlice = createSlice({
     },
     setUserPosts: (state, action) => {
       state.userPosts = action.payload;
-    }
+    },
   },
 });
 
-export const {setCurrentChatRoom, setPrivateChatRoom, setUserPosts} = chatRoomSlice.actions
+export const { setCurrentChatRoom, setPrivateChatRoom, setUserPosts } = chatRoomSlice.actions;
 
 export default chatRoomSlice.reducer;
