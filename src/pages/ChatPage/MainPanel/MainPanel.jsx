@@ -11,7 +11,7 @@ const MainPanel = () => {
   const [messages, setMessages] = useState([]);
   const [messagesLoading, setMessagesLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResult, setSearchResult] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
 
   const { currentChatRoom } = useSelector((state) => state.chatRoom);
@@ -27,10 +27,23 @@ const MainPanel = () => {
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
     setSearchLoading(true);
+    handleSearchMessages(event.target.value);
   };
 
-  const handleSearchMessage = (searchTerm) => {
-    // const
+  const handleSearchMessages = (searchTerm) => {
+    const chatRooomMessages = [...messages];
+    const regex = new RegExp(searchTerm, "gi");
+    const searchResults = chatRooomMessages.reduce((acc, message) => {
+      if (
+        (message.content && message.content.match(regex)) ||
+        message.user.name.match(regex)
+      ) {
+        acc.push(message);
+      }
+      return acc;
+    }, []);
+    setSearchResults(searchResults);
+    setSearchLoading(false);
   };
 
   const addMessagesListner = (chatRoomId) => {
@@ -48,7 +61,9 @@ const MainPanel = () => {
   const renderMessages = (messages) => {
     return (
       messages.length > 0 &&
-      messages.map((message) => <Message key={message.timestamp} message={message} user={currentUser} />)
+      messages.map((message) => (
+        <Message key={message.timestamp} message={message} user={currentUser} />
+      ))
     );
   };
 
@@ -67,7 +82,8 @@ const MainPanel = () => {
           overflowY: "auto",
         }}
       >
-        {renderMessages(messages)}
+        {searchLoading && <div>loading...</div>}
+        {searchTerm ? renderMessages(searchResults) : renderMessages(messages)}
       </div>
 
       <MessageForm />
