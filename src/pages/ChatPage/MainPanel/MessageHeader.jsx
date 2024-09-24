@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { Col, FormControl, Image, InputGroup, Row } from "react-bootstrap";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaLock, FaLockOpen } from "react-icons/fa";
+import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 import { useSelector } from "react-redux";
 
 const MessageHeader = ({ handleSearchChange }) => {
   const { currentChatRoom } = useSelector((state) => state.chatRoom);
   const { isPrivateChatRoom } = useSelector((state) => state.chatRoom);
+  const [isFavorite, setIsFavorite] = useState(false);
   return (
     <div
       style={{
@@ -21,11 +23,9 @@ const MessageHeader = ({ handleSearchChange }) => {
       <Row>
         <Col>
           <h2>
-            {isPrivateChatRoom ? (
-              <FaLock style={{ marginBottom: 10 }} />
-            ) : (
-              <FaLockOpen style={{ marginBottom: 10 }} />
-            )}
+            {isPrivateChatRoom ? <FaLock style={{ marginBottom: 10 }} /> : <FaLockOpen style={{ marginBottom: 10 }} />}{" "}
+            <span>{currentChatRoom?.name}</span> {` `}
+            {!isPrivateChatRoom && <span>{isFavorite ? <MdFavorite /> : <MdFavoriteBorder />}</span>}
           </h2>
         </Col>
         <Col>
@@ -33,10 +33,7 @@ const MessageHeader = ({ handleSearchChange }) => {
             <InputGroup.Text>
               <AiOutlineSearch />
             </InputGroup.Text>
-            <FormControl
-              onChange={handleSearchChange}
-              placeholder="Search Messages"
-            />
+            <FormControl onChange={handleSearchChange} placeholder="Search Messages" />
           </InputGroup>
         </Col>
       </Row>

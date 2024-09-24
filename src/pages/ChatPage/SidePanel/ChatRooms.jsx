@@ -4,7 +4,7 @@ import { FaPlus, FaRegSmileWink } from "react-icons/fa";
 import { db } from "../../../firebase";
 import { child, off, onChildAdded, push, ref, update } from "firebase/database";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentChatRoom } from "../../../store/chatRoomSlice";
+import { setCurrentChatRoom, setPrivateChatRoom } from "../../../store/chatRoomSlice";
 
 const ChatRooms = () => {
   const [show, setShow] = useState(false);
@@ -73,6 +73,7 @@ const ChatRooms = () => {
 
   const changeChatRoom = (room) => {
     dispatch(setCurrentChatRoom(room));
+    dispatch(setPrivateChatRoom(false));
     setActiveChatRoomId(room.id);
   };
 
@@ -105,10 +106,7 @@ const ChatRooms = () => {
       >
         <FaRegSmileWink style={{ marginRight: 5 }} />
         CHAT ROOMS {`(${chatRooms.length})`}
-        <FaPlus
-          onClick={() => setShow(!show)}
-          style={{ position: "absolute", right: 0, cursor: "pointer" }}
-        />
+        <FaPlus onClick={() => setShow(!show)} style={{ position: "absolute", right: 0, cursor: "pointer" }} />
       </div>
       <ul style={{ listStyleType: "none", padding: 0 }}>{renderChatRooms()}</ul>
       <Modal show={show} onHide={() => setShow(false)}>

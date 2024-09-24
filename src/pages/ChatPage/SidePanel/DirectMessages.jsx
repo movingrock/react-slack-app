@@ -3,23 +3,26 @@ import React, { useEffect, useState } from "react";
 import { FaRegSmile } from "react-icons/fa";
 import { db } from "../../../firebase";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setCurrentChatRoom,
-  setPrivateChatRoom,
-} from "../../../store/chatRoomSlice";
+import { setCurrentChatRoom, setPrivateChatRoom } from "../../../store/chatRoomSlice";
 
 const DirectMessages = () => {
   const usersRef = ref(db, "users");
 
   const [users, setUsers] = useState([]);
   const [activeChatRoomId, setActiveChatRoomId] = useState("");
-  const [currentChatRoom, setCurrentChatRoom] = useState();
+
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (currentUser?.uid) addUsersListener(currentUser.uid);
+    if (currentUser?.uid) {
+      addUsersListener(currentUser.uid);
+    }
   }, [currentUser?.uid]);
+
+  // const componentDidMount = () => {
+  //   addUsersListener();
+  // };
 
   const addUsersListener = (currentUserId) => {
     let usersArray = [];
@@ -39,13 +42,11 @@ const DirectMessages = () => {
   const getChatRoomId = (userId) => {
     const currentUserId = currentUser.uid;
 
-    return userId > currentUserId
-      ? `${userId}/${currentUserId}`
-      : `${currentUserId}/${userId}`;
+    return userId > currentUserId ? `${userId}/${currentUserId}` : `${currentUserId}/${userId}`;
   };
 
   const changeChatRoom = (user) => {
-    const chatRoomId = getChatRoomId(user);
+    const chatRoomId = getChatRoomId(user.uid);
     const chatRoomData = {
       id: chatRoomId,
       name: user.name,
@@ -56,20 +57,19 @@ const DirectMessages = () => {
     setActiveChatRoomId(user.uid);
   };
 
-  const renderDirectMessages = (users) => {
+  const renderDirectMessages = (users) =>
     users.length > 0 &&
-      users.map((user) => (
-        <li
-          key={user.uid}
-          style={{
-            backgroundColor: user.uid === activeChatRoomId ? "#ffffff45" : "",
-          }}
-          onClick={() => changeChatRoom(user)}
-        >
-          # {user.name}
-        </li>
-      ));
-  };
+    users.map((user) => (
+      <li
+        key={user.uid}
+        style={{
+          backgroundColor: user.uid === activeChatRoomId ? "#ffffff45" : "",
+        }}
+        onClick={() => changeChatRoom(user)}
+      >
+        # {user.name}
+      </li>
+    ));
 
   return (
     <div>
@@ -82,11 +82,9 @@ const DirectMessages = () => {
         }}
       >
         <FaRegSmile style={{ marginRight: 5 }} />
-        DIRECT MESSAGS
+        DIRECT MESSAGES {`(${users.length})`}
       </span>
-      <ul style={{ listStyleType: "none", padding: 0 }}>
-        {renderDirectMessages(users)}
-      </ul>
+      <ul style={{ listStyleType: "none", padding: 0 }}>{renderDirectMessages(users)}</ul>
     </div>
   );
 };
