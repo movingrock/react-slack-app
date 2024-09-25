@@ -25,7 +25,15 @@ const MessageHeader = ({ handleSearchChange }) => {
           <h2>
             {isPrivateChatRoom ? <FaLock style={{ marginBottom: 10 }} /> : <FaLockOpen style={{ marginBottom: 10 }} />}{" "}
             <span>{currentChatRoom?.name}</span> {` `}
-            {!isPrivateChatRoom && <span>{isFavorite ? <MdFavorite /> : <MdFavoriteBorder />}</span>}
+            {!isPrivateChatRoom && (
+              <span style={{ cursor: "pointer" }}>
+                {isFavorite ? (
+                  <MdFavorite style={{ marginBottom: 10 }} />
+                ) : (
+                  <MdFavoriteBorder style={{ marginBottom: 10 }} />
+                )}
+              </span>
+            )}
           </h2>
         </Col>
         <Col>
