@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Col, FormControl, Image, InputGroup, Row } from "react-bootstrap";
+import {
+  Accordion,
+  Col,
+  FormControl,
+  Image,
+  InputGroup,
+  Row,
+} from "react-bootstrap";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaLock, FaLockOpen } from "react-icons/fa";
 import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
@@ -108,6 +115,12 @@ const MessageHeader = ({ handleSearchChange }) => {
           <p>{currentChatRoom?.createdBy.name}</p>
         </div>
       )}
+
+      <Row>
+        <Col>
+          <Accordion.Item></Accordion.Item>
+        </Col>
+      </Row>
     </div>
   );
 };
