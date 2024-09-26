@@ -9,12 +9,13 @@ import {
 } from "firebase/auth";
 import md5 from "md5";
 import { ref, set } from "firebase/database";
+import { useDispatch } from "react-redux";
 
 const RegisterPage = () => {
   const auth = getAuth(app);
   const [loading, setLoading] = useState(false);
   const [errorFromSubmit, setErrorFromSubmit] = useState("");
-
+  const dispatch = useDispatch();
   const {
     register,
     watch,
@@ -36,6 +37,14 @@ const RegisterPage = () => {
           createdUser.user.email
         )}?d=identicon`,
       });
+
+      const userData = {
+        uid: createdUser.user.uid,
+        displayName: createdUser.user.displayName,
+        photoURL: createdUser.user.photoURL,
+      };
+
+      dispatch(setUser(userData));
 
       set(ref(db, `users/${createdUser.user.uid}`), {
         name: createdUser.user.displayName,

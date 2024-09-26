@@ -18,7 +18,10 @@ const MessageHeader = ({ handleSearchChange }) => {
   const { currentChatRoom } = useSelector((state) => state.chatRoom);
   const { isPrivateChatRoom } = useSelector((state) => state.chatRoom);
   const { currentUser } = useSelector((state) => state.user);
+  const { userPosts } = useSelector((state) => state.chatRoom);
+
   const [isFavorite, setIsFavorite] = useState(false);
+
   const usersRef = ref(db, "users");
 
   useEffect(() => {
@@ -61,6 +64,26 @@ const MessageHeader = ({ handleSearchChange }) => {
       });
     }
   };
+
+  const renderUserPosts = (userPosts) => {
+    return Object.entries(userPosts)
+      .sort((a, b) => b[1].count - a[1].count)
+      .map(([key, val], i) => (
+        <div key={i} style={{ display: "flex" }}>
+          <Image
+            style={{ width: 45, height: 45, marginRight: 10 }}
+            roundedCircle
+            src={val.image}
+            alt={key}
+          />
+          <div>
+            <h6>{key}</h6>
+            <p>{val.count} 개</p>
+          </div>
+        </div>
+      ));
+  };
+
   return (
     <div
       style={{
@@ -118,7 +141,31 @@ const MessageHeader = ({ handleSearchChange }) => {
 
       <Row>
         <Col>
-          <Accordion.Item></Accordion.Item>
+          <Accordion>
+            <Accordion.Item eventKey="0">
+              <Accordion.Header>Description</Accordion.Header>
+              <Accordion.Collapse eventKey="0">
+                <Accordion.Body>{currentChatRoom?.description}</Accordion.Body>
+              </Accordion.Collapse>
+            </Accordion.Item>
+          </Accordion>
+        </Col>
+        <Col>
+          <Accordion>
+            <Accordion.Item eventKey="1">
+              <Accordion.Header>Posts Count</Accordion.Header>
+              <Accordion.Collapse eventKey="1">
+                <Accordion.Body>
+                  {/* {userPosts && renderUserPosts(userPosts)} */}
+                  {userPosts && Object.keys(userPosts).length > 0 ? (
+                    renderUserPosts(userPosts)
+                  ) : (
+                    <p>No messages in this chat room</p>
+                  )}
+                </Accordion.Body>
+              </Accordion.Collapse>
+            </Accordion.Item>
+          </Accordion>
         </Col>
       </Row>
     </div>

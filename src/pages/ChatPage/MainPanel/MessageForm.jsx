@@ -1,8 +1,19 @@
-import { child, push, ref as dbRef, serverTimestamp, set } from "firebase/database";
+import {
+  child,
+  push,
+  ref as dbRef,
+  serverTimestamp,
+  set,
+  remove,
+} from "firebase/database";
 import React, { useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { db, storage } from "../../../firebase";
-import { getDownloadURL, ref as strRef, uploadBytesResumable } from "firebase/storage";
+import {
+  getDownloadURL,
+  ref as strRef,
+  uploadBytesResumable,
+} from "firebase/storage";
 import { ProgressBar } from "react-bootstrap";
 
 const MessageForm = () => {
@@ -93,7 +104,8 @@ const MessageForm = () => {
       "state_changed",
       (snapshot) => {
         // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         setPercentage(Math.round(progress));
         console.log("Upload is " + progress + "% done");
         switch (snapshot.state) {
@@ -128,11 +140,26 @@ const MessageForm = () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           console.log("File available at", downloadURL);
 
-          set(push(child(messagesRef, currentChatRoom.id)), createMessage(downloadURL));
+          set(
+            push(child(messagesRef, currentChatRoom.id)),
+            createMessage(downloadURL)
+          );
           setLoading(false);
         });
       }
     );
+  };
+
+  const handleChange = (event) => {
+    setContent(event.target.value);
+
+    if (event.target.value) {
+      set(dbRef(db, `typing/${currentChatRoom.id}/${currentUser.uid}`), {
+        userUid: currentUser.displayName,
+      });
+    } else {
+      remove(dbRef(db, `typing/${currentChatRoom.id}/${currentUser.uid}`));
+    }
   };
 
   return (
@@ -146,10 +173,14 @@ const MessageForm = () => {
             borderRadius: 4,
           }}
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={handleChange}
         />
         {!(percentage === 0 || percentage === 100) && (
-          <ProgressBar variant="warning" label={`${percentage}%`} now={percentage} />
+          <ProgressBar
+            variant="warning"
+            label={`${percentage}%`}
+            now={percentage}
+          />
         )}
 
         <div>

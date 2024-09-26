@@ -20,6 +20,7 @@ export const chatRoomSlice = createSlice({
   reducers: {
     setCurrentChatRoom: (state, action) => {
       state.currentChatRoom = action.payload;
+      state.userPosts = null;
     },
     setPrivateChatRoom: (state, action) => {
       state.isPrivateChatRoom = action.payload;
