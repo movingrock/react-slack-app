@@ -16,5 +16,5 @@ service firebase.storage {
       request.resource.contentType.matches("image/*") &&
       request.resource.size < 10 * 1024 *1024;
     }
-  }```
+  }
 }
