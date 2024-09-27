@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import MessageHeader from "./MessageHeader";
 import MessageForm from "./MessageForm";
 import {
@@ -12,10 +12,13 @@ import { db } from "../../../firebase";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "./Message";
 import { setUserPosts } from "../../../store/chatRoomSlice";
+import Skeleton from "../../../components/Skeleton";
 
 const MainPanel = () => {
   const messagesRef = dbRef(db, "messages");
   const typingRef = dbRef(db, "typing");
+
+  const messageEndRef = useRef(null);
 
   const [messages, setMessages] = useState([]);
   const [messagesLoading, setMessagesLoading] = useState(true);
@@ -28,6 +31,10 @@ const MainPanel = () => {
 
   const { currentChatRoom } = useSelector((state) => state.chatRoom);
   const { currentUser } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+  });
 
   useEffect(() => {
     if (currentChatRoom.id) {
@@ -141,6 +148,18 @@ const MainPanel = () => {
     );
   };
 
+  const renderMessageSkeleton = (loading) => {
+    return (
+      loading && (
+        <>
+          {[...Array(13)].map((_, i) => (
+            <Skeleton key={i} />
+          ))}
+        </>
+      )
+    );
+  };
+
   return (
     <div style={{ padding: "2rem 2rem 0 2rem" }}>
       <MessageHeader handleSearchChange={handleSearchChange} />
@@ -156,9 +175,11 @@ const MainPanel = () => {
           overflowY: "auto",
         }}
       >
+        {renderMessageSkeleton(messagesLoading)}
         {searchLoading && <div>loading...</div>}
         {searchTerm ? renderMessages(searchResults) : renderMessages(messages)}
         {renderTypingUsers(typingUsers)}
+        <div ref={messageEndRef} />
       </div>
 
       <MessageForm />
