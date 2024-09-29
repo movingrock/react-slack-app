@@ -1,13 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import MessageHeader from "./MessageHeader";
 import MessageForm from "./MessageForm";
-import {
-  child,
-  off,
-  onChildAdded,
-  ref as dbRef,
-  onChildRemoved,
-} from "firebase/database";
+import { child, off, onChildAdded, ref as dbRef, onChildRemoved } from "firebase/database";
 import { db } from "../../../firebase";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "./Message";
@@ -64,13 +58,9 @@ const MainPanel = () => {
     });
 
     onChildRemoved(child(typingRef, chatRoomId), (DataSnapShot) => {
-      const index = typingUsers.findIndex(
-        (user) => user.id === DataSnapShot.key
-      );
+      const index = typingUsers.findIndex((user) => user.id === DataSnapShot.key);
       if (index !== -1) {
-        typingUsers = typingUsers.filter(
-          (user) => user.id !== DataSnapShot.key
-        );
+        typingUsers = typingUsers.filter((user) => user.id !== DataSnapShot.key);
         setTypingUsers(typingUsers);
       }
     });
@@ -86,10 +76,7 @@ const MainPanel = () => {
     const chatRooomMessages = [...messages];
     const regex = new RegExp(searchTerm, "gi");
     const searchResults = chatRooomMessages.reduce((acc, message) => {
-      if (
-        (message.content && message.content.match(regex)) ||
-        message.user.name.match(regex)
-      ) {
+      if ((message.content && message.content.match(regex)) || message.user.name.match(regex)) {
         acc.push(message);
       }
       return acc;
@@ -132,9 +119,7 @@ const MainPanel = () => {
     return (
       typingUsers.length > 0 &&
       typingUsers.map((user) => (
-        <span key={user.name.userUid}>
-          {user.name.userUid}님이 채팅을 입력하고 있습니다...
-        </span>
+        <span key={user.name.userUid}>{user.name.userUid}님이 채팅을 입력하고 있습니다...</span>
       ))
     );
   };
@@ -142,9 +127,7 @@ const MainPanel = () => {
   const renderMessages = (messages) => {
     return (
       messages.length > 0 &&
-      messages.map((message) => (
-        <Message key={message.timestamp} message={message} user={currentUser} />
-      ))
+      messages.map((message) => <Message key={message.timestamp} message={message} user={currentUser} />)
     );
   };
 

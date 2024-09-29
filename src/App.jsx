@@ -17,6 +17,7 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+        console.log("로그인 됨.", user);
         navigate("/");
         dispatch(
           setUser({

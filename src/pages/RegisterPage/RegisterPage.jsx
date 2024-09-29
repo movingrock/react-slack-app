@@ -6,6 +6,7 @@ import { createUserWithEmailAndPassword, getAuth, updateProfile } from "firebase
 import md5 from "md5";
 import { ref, set } from "firebase/database";
 import { useDispatch } from "react-redux";
+import { setUser } from "../../store/userSlice";
 
 const RegisterPage = () => {
   const auth = getAuth(app);

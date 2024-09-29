@@ -1,29 +1,20 @@
-import {
-  child,
-  push,
-  ref as dbRef,
-  serverTimestamp,
-  set,
-  remove,
-} from "firebase/database";
+import { child, push, ref as dbRef, serverTimestamp, set, remove } from "firebase/database";
 import React, { useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { db, storage } from "../../../firebase";
-import {
-  getDownloadURL,
-  ref as strRef,
-  uploadBytesResumable,
-} from "firebase/storage";
+import { getDownloadURL, ref as strRef, uploadBytesResumable } from "firebase/storage";
 import { ProgressBar } from "react-bootstrap";
 
 const MessageForm = () => {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState([]);
-  const messagesRef = dbRef(db, "messages");
-  const inputOpenImageRef = useRef(null);
-
   const [percentage, setPercentage] = useState(0);
+
+  const messagesRef = dbRef(db, "messages");
+  const typingRef = dbRef(db, "typing");
+
+  const inputOpenImageRef = useRef(null);
 
   const { currentChatRoom } = useSelector((state) => state.chatRoom);
   const { isPrivateChatRoom } = useSelector((state) => state.chatRoom);
@@ -40,9 +31,7 @@ const MessageForm = () => {
 
     try {
       await set(push(child(messagesRef, currentChatRoom.id)), createMessage());
-      // await remove(
-      //   child(typingRef, `${currentChatRoom.id}/${currentUser.uid}`)
-      // );
+      await remove(child(typingRef, `${currentChatRoom.id}/${currentUser.uid}`));
       setLoading(false);
       setContent("");
       setErrors([]);
@@ -104,8 +93,7 @@ const MessageForm = () => {
       "state_changed",
       (snapshot) => {
         // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         setPercentage(Math.round(progress));
         console.log("Upload is " + progress + "% done");
         switch (snapshot.state) {
@@ -140,10 +128,7 @@ const MessageForm = () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           console.log("File available at", downloadURL);
 
-          set(
-            push(child(messagesRef, currentChatRoom.id)),
-            createMessage(downloadURL)
-          );
+          set(push(child(messagesRef, currentChatRoom.id)), createMessage(downloadURL));
           setLoading(false);
         });
       }
@@ -176,11 +161,7 @@ const MessageForm = () => {
           onChange={handleChange}
         />
         {!(percentage === 0 || percentage === 100) && (
-          <ProgressBar
-            variant="warning"
-            label={`${percentage}%`}
-            now={percentage}
-          />
+          <ProgressBar variant="warning" label={`${percentage}%`} now={percentage} />
         )}
 
         <div>
