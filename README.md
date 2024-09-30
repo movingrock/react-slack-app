@@ -4,6 +4,47 @@
 
 [https://react-chat-app-278eb.web.app/login](https://react-chat-app-278eb.web.app/login)
 
+# react-slack-app
+
+- firebase
+- react.js, javascript, vite
+
+## 파일 구조
+
+src
+┣ assets
+┃ ┗ react.svg
+┣ components
+┃ ┣ Skeleton.css
+┃ ┗ Skeleton.jsx
+┣ pages
+┃ ┣ ChatPage
+┃ ┃ ┣ MainPanel
+┃ ┃ ┃ ┣ MainPanel.jsx
+┃ ┃ ┃ ┣ Message.jsx
+┃ ┃ ┃ ┣ MessageForm.jsx
+┃ ┃ ┃ ┗ MessageHeader.jsx
+┃ ┃ ┣ SidePanel
+┃ ┃ ┃ ┣ ChatRooms.jsx
+┃ ┃ ┃ ┣ DirectMessages.jsx
+┃ ┃ ┃ ┣ Favorite.jsx
+┃ ┃ ┃ ┣ SidePanel.jsx
+┃ ┃ ┃ ┗ UserPanel.jsx
+┃ ┃ ┗ ChatPage.jsx
+┃ ┣ LoginPage
+┃ ┃ ┗ LoginPage.jsx
+┃ ┗ RegisterPage
+┃ ┃ ┗ RegisterPage.jsx
+┣ store
+┃ ┣ chatRoomSlice.js
+┃ ┣ index.js
+┃ ┗ userSlice.js
+┣ App.css
+┣ App.jsx
+┣ firebase.js
+┣ index.css
+┗ main.jsx
+
 # 설치
 
 ```
