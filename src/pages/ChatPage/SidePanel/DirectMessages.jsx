@@ -3,7 +3,10 @@ import React, { useEffect, useState } from "react";
 import { FaRegSmile } from "react-icons/fa";
 import { db } from "../../../firebase";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentChatRoom, setPrivateChatRoom } from "../../../store/chatRoomSlice";
+import {
+  setCurrentChatRoom,
+  setPrivateChatRoom,
+} from "../../../store/chatRoomSlice";
 
 const DirectMessages = () => {
   const usersRef = ref(db, "users");
@@ -42,7 +45,9 @@ const DirectMessages = () => {
   const getChatRoomId = (userId) => {
     const currentUserId = currentUser.uid;
 
-    return userId > currentUserId ? `${userId}/${currentUserId}` : `${currentUserId}/${userId}`;
+    return userId > currentUserId
+      ? `${userId}/${currentUserId}`
+      : `${currentUserId}/${userId}`;
   };
 
   const changeChatRoom = (user) => {
@@ -84,7 +89,9 @@ const DirectMessages = () => {
         <FaRegSmile style={{ marginRight: 5 }} />
         DIRECT MESSAGES {`(${users.length})`}
       </span>
-      <ul style={{ listStyleType: "none", padding: 0 }}>{renderDirectMessages(users)}</ul>
+      <ul style={{ listStyleType: "none", padding: 0 }}>
+        {renderDirectMessages(users)}
+      </ul>
     </div>
   );
 };

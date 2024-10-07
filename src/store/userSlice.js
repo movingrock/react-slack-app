@@ -22,6 +22,7 @@ export const userSlice = createSlice({
     },
     setPhotoUrl: (state, action) => {
       state.currentUser = {
+        ...state.currentUser,
         photoURL: action.payload
       }
     }

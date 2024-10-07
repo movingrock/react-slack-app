@@ -42,11 +42,11 @@ const Message = ({ message, user, scrollToBottom }) => {
             color: isMessageMine(message, user) ? "rgb(123, 131, 235)" : "",
           }}
         >
-          {message.user.name}
+          {message.user.name}{" "}
+          <span style={{ fontSize: 10, color: "gray" }}>
+            {timeFromNow(message.timestamp)}
+          </span>
         </h6>
-        <span style={{ fontSize: 10, color: "gray" }}>
-          {timeFromNow(message.timestamp)}
-        </span>
         <h6>
           {isImage(message) ? (
             <img

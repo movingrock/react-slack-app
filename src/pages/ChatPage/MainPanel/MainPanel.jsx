@@ -7,6 +7,7 @@ import {
   onChildAdded,
   ref as dbRef,
   onChildRemoved,
+  remove,
 } from "firebase/database";
 import { db } from "../../../firebase";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,7 +18,6 @@ import Skeleton from "../../../components/Skeleton";
 const MainPanel = () => {
   const messagesRef = dbRef(db, "messages");
   const typingRef = dbRef(db, "typing");
-
   const messageEndRef = useRef(null);
 
   const [messages, setMessages] = useState([]);
@@ -26,6 +26,7 @@ const MainPanel = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [typingUsers, setTypingUsers] = useState([]);
+  const [listenerLists, setListenerLists] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -46,15 +47,26 @@ const MainPanel = () => {
     if (currentChatRoom.id) {
       addMessagesListner(currentChatRoom.id);
       addTypingListeners(currentChatRoom.id);
+
+      const typingRefForCurrentUser = child(
+        typingRef,
+        `${currentChatRoom.id}/${currentUser.uid}`
+      );
+      remove(typingRefForCurrentUser); // Clear typing status when switching rooms
     }
     return () => {
       off(messagesRef);
+      removeListeners(listenerLists);
     };
   }, [currentChatRoom.id]);
 
-  /** 이벤트 리스너
-   * 누가 채팅치고 있는지를 db에 불러오고 다른 상대에게 보여줌.
-   */
+  const removeListeners = (listeners) => {
+    listeners.forEach((listener) => {
+      off(dbRef(db, `messages/${listener.id}`), listener.event);
+    });
+  };
+
+  // 누가 채팅치고 있는지를 db에 불러오고 다른 상대에게 보여줌.
   const addTypingListeners = (chatRoomId) => {
     let typingUsers = [];
 
@@ -69,6 +81,8 @@ const MainPanel = () => {
       }
     });
 
+    addToListenerLists(chatRoomId, typingRef, "child_added");
+
     onChildRemoved(child(typingRef, chatRoomId), (DataSnapShot) => {
       const index = typingUsers.findIndex(
         (user) => user.id === DataSnapShot.key
@@ -80,6 +94,21 @@ const MainPanel = () => {
         setTypingUsers(typingUsers);
       }
     });
+    addToListenerLists(chatRoomId, typingRef, "child_removed");
+  };
+
+  const addToListenerLists = (id, ref, event) => {
+    //이미 등록된 리스너인지 확인
+    const index = listenerLists.findIndex((listener) => {
+      return (
+        listener.id === id && listener.ref === ref && listener.event === event
+      );
+    });
+
+    if (index === -1) {
+      const newListener = { id, ref, event };
+      setListenerLists(listenerLists.concat(newListener));
+    }
   };
 
   const handleSearchChange = (event) => {
@@ -138,9 +167,9 @@ const MainPanel = () => {
     return (
       typingUsers.length > 0 &&
       typingUsers.map((user) => (
-        <span key={user.name.userUid}>
+        <div key={user.name.userUid}>
           {user.name.userUid}님이 채팅을 입력하고 있습니다...
-        </span>
+        </div>
       ))
     );
   };

@@ -6,7 +6,7 @@ import {
   set,
   remove,
 } from "firebase/database";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { db, storage } from "../../../firebase";
 import {
@@ -30,6 +30,10 @@ const MessageForm = () => {
   const { currentChatRoom } = useSelector((state) => state.chatRoom);
   const { isPrivateChatRoom } = useSelector((state) => state.chatRoom);
   const { currentUser } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    setContent("");
+  }, [currentChatRoom.id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
