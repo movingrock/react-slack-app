@@ -70,6 +70,13 @@ npm i
 npm install @reduxjs/toolkit bootstrap firebase md5 moment react-bootstrap react-hook-form react-icons react-redux react-router-dom
 ```
 
+- `firebase로 빌드하기`
+
+```
+npm run build
+firebase deploy
+```
+
 # 프로젝트 개선한 부분
 
 1. 이미지 업로드시 autoscroll시 적용되지 않음. (onLoad를 활용해 이미지 로드시 autoscroll 되도록 수정)
