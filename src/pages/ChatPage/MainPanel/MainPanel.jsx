@@ -1,14 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import MessageHeader from "./MessageHeader";
 import MessageForm from "./MessageForm";
-import {
-  child,
-  off,
-  onChildAdded,
-  ref as dbRef,
-  onChildRemoved,
-  remove,
-} from "firebase/database";
+import { child, off, onChildAdded, ref as dbRef, onChildRemoved, remove } from "firebase/database";
 import { db } from "../../../firebase";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "./Message";
@@ -48,15 +41,15 @@ const MainPanel = () => {
       addMessagesListner(currentChatRoom.id);
       addTypingListeners(currentChatRoom.id);
 
-      const typingRefForCurrentUser = child(
-        typingRef,
-        `${currentChatRoom.id}/${currentUser.uid}`
-      );
-      remove(typingRefForCurrentUser); // Clear typing status when switching rooms
+      // 방 이동 시 현재 방의 타이핑 상태를 삭제
+      const typingRefForCurrentUser = child(typingRef, `${currentChatRoom.id}/${currentUser.uid}`);
+      remove(typingRefForCurrentUser); // 이전 방의 타이핑 상태 삭제
     }
     return () => {
-      off(messagesRef);
-      removeListeners(listenerLists);
+      off(messagesRef); // 메시지 리스너 해제
+      off(typingRef); // typing 리스너 해제 추가
+      // off(child(typingRef, currentChatRoom.id)); // 이전 방에 대한 타이핑 리스너 해제
+      removeListeners(listenerLists); // 리스너 목록 해제
     };
   }, [currentChatRoom.id]);
 
@@ -76,6 +69,7 @@ const MainPanel = () => {
         typingUsers = typingUsers.concat({
           id: DataSnapshot.key,
           name: DataSnapshot.val(),
+          chatRoomId: chatRoomId,
         });
         setTypingUsers(typingUsers);
       }
@@ -84,13 +78,9 @@ const MainPanel = () => {
     addToListenerLists(chatRoomId, typingRef, "child_added");
 
     onChildRemoved(child(typingRef, chatRoomId), (DataSnapShot) => {
-      const index = typingUsers.findIndex(
-        (user) => user.id === DataSnapShot.key
-      );
+      const index = typingUsers.findIndex((user) => user.id === DataSnapShot.key);
       if (index !== -1) {
-        typingUsers = typingUsers.filter(
-          (user) => user.id !== DataSnapShot.key
-        );
+        typingUsers = typingUsers.filter((user) => user.id !== DataSnapShot.key);
         setTypingUsers(typingUsers);
       }
     });
@@ -100,9 +90,7 @@ const MainPanel = () => {
   const addToListenerLists = (id, ref, event) => {
     //이미 등록된 리스너인지 확인
     const index = listenerLists.findIndex((listener) => {
-      return (
-        listener.id === id && listener.ref === ref && listener.event === event
-      );
+      return listener.id === id && listener.ref === ref && listener.event === event;
     });
 
     if (index === -1) {
@@ -121,10 +109,7 @@ const MainPanel = () => {
     const chatRooomMessages = [...messages];
     const regex = new RegExp(searchTerm, "gi");
     const searchResults = chatRooomMessages.reduce((acc, message) => {
-      if (
-        (message.content && message.content.match(regex)) ||
-        message.user.name.match(regex)
-      ) {
+      if ((message.content && message.content.match(regex)) || message.user.name.match(regex)) {
         acc.push(message);
       }
       return acc;
@@ -163,27 +148,35 @@ const MainPanel = () => {
     dispatch(setUserPosts(userPosts));
   };
 
+  // const renderTypingUsers = (typingUsers) => {
+  //   if (typingUsers.length === 0) return null;
+  //   console.log(typingUsers);
+
+  //   const typingUsernames = typingUsers.map((user) => user.name.userUid);
+  //   const typingMessage =
+  //     typingUsernames.length === 1
+  //       ? `${typingUsernames[0]}님이 채팅을 입력하고 있습니다...`
+  //       : `${typingUsernames.join(", ")}님이 채팅을 입력하고 있습니다...`;
+
+  //   return <span>{typingMessage}</span>;
+  // };
+
   const renderTypingUsers = (typingUsers) => {
-    return (
-      typingUsers.length > 0 &&
-      typingUsers.map((user) => (
-        <div key={user.name.userUid}>
-          {user.name.userUid}님이 채팅을 입력하고 있습니다...
-        </div>
-      ))
-    );
+    // 현재 채팅방과 일치하는 유저들만 보여줌
+    const usersInCurrentRoom = typingUsers.filter((user) => user.chatRoomId === currentChatRoom.id);
+
+    if (usersInCurrentRoom.length > 0) {
+      const userNames = usersInCurrentRoom.map((user) => user.name.userUid).join(", ");
+      return <span>{userNames}님이 채팅을 입력하고 있습니다...</span>;
+    }
+    return null;
   };
 
   const renderMessages = (messages) => {
     return (
       messages.length > 0 &&
       messages.map((message) => (
-        <Message
-          key={message.timestamp}
-          message={message}
-          user={currentUser}
-          scrollToBottom={scrollToBottom}
-        />
+        <Message key={message.timestamp} message={message} user={currentUser} scrollToBottom={scrollToBottom} />
       ))
     );
   };
