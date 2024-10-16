@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Modal } from "react-bootstrap";
+import { Badge, Button, Form, Modal } from "react-bootstrap";
 import { FaPlus, FaRegSmileWink } from "react-icons/fa";
 import { db } from "../../../firebase";
-import { child, off, onChildAdded, push, ref, update } from "firebase/database";
+import { child, off, onChildAdded, onValue, push, ref, update } from "firebase/database";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentChatRoom, setPrivateChatRoom } from "../../../store/chatRoomSlice";
 
@@ -10,20 +10,23 @@ const ChatRooms = () => {
   const [show, setShow] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-
-  const chatRoomsRef = ref(db, "chatrooms");
-
   const [chatRooms, setChatRooms] = useState([]);
   const [firstLoad, setFirstLoad] = useState(true);
   const [activeChatRoomId, setActiveChatRoomId] = useState("");
+  const [notifications, setNotifications] = useState([]);
+
+  const chatRoomsRef = ref(db, "chatrooms");
+  const messagesRef = ref(db, "messages");
 
   const { currentUser } = useSelector((state) => state.user);
+  const { currentChatRoom } = useSelector((state) => state.chatRoom);
   const dispatch = useDispatch();
 
   useEffect(() => {
     addChatRoomsListeners();
     return () => {
       off(chatRoomsRef);
+      chatRooms.forEach((chatRoom) => off(child(messagesRef, chatRoom.id)));
     };
   }, []);
 
@@ -59,7 +62,51 @@ const ChatRooms = () => {
       const newChatRooms = [...chatRoomsArray];
       setChatRooms(newChatRooms);
       setFirstChatRoom(newChatRooms);
+      addNotificationListner(DataSnapshot.key);
     });
+  };
+
+  const addNotificationListner = (chatRoomId) => {
+    onValue(child(messagesRef, chatRoomId), (DataSnapshot) => {
+      if (currentChatRoom) {
+        handleNotification(chatRoomId, currentChatRoom.id, notifications, DataSnapshot);
+      }
+    });
+  };
+
+  const handleNotification = (chatRoomId, currentChatRoomId, notifications, DataSnapshot) => {
+    let index = notifications.findIndex((notification) => notification.id === chatRoomId);
+
+    if (index === -1) {
+      notifications.push({
+        id: chatRoomId,
+        total: DataSnapshot.size,
+        lastKnowTotal: DataSnapshot.size,
+        count: 0,
+      });
+    } else {
+      if (chatRoomId !== currentChatRoomId) {
+        let lastTotal = notifications[index].lastKnowTotal;
+        if (DataSnapshot.size - lastTotal > 0) {
+          notifications[index].count = DataSnapshot.size - lastTotal;
+        }
+      }
+      notifications[index].total = DataSnapshot.size;
+    }
+
+    setNotifications([...notifications]);
+  };
+
+  const getNotificationCount = (chatRoom) => {
+    let count = 0;
+
+    notifications.forEach((notification) => {
+      if (notification.id === chatRoom.id) {
+        count = notification.count;
+      }
+    });
+
+    if (count > 0) return count;
   };
 
   const setFirstChatRoom = (chatRooms) => {
@@ -75,6 +122,20 @@ const ChatRooms = () => {
     dispatch(setCurrentChatRoom(room));
     dispatch(setPrivateChatRoom(false));
     setActiveChatRoomId(room.id);
+    clearNotifications(room);
+
+    addNotificationListner(room.id);
+  };
+
+  const clearNotifications = (room) => {
+    let index = notifications.findIndex((notification) => notification.id === room.id);
+
+    if (index !== -1) {
+      let updatedNotifications = [...notifications];
+      updatedNotifications[index].lastKnowTotal = notifications[index].total;
+      updatedNotifications[index].count = 0;
+      setNotifications(updatedNotifications);
+    }
   };
 
   const renderChatRooms = () => {
@@ -89,6 +150,9 @@ const ChatRooms = () => {
           }}
         >
           # {room.name}
+          <Badge style={{ float: "right", marginRight: "4px" }} bg="danger">
+            {getNotificationCount(room)}
+          </Badge>
         </li>
       ))
     );
