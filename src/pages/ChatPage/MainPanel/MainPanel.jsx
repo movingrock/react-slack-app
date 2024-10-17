@@ -148,19 +148,6 @@ const MainPanel = () => {
     dispatch(setUserPosts(userPosts));
   };
 
-  // const renderTypingUsers = (typingUsers) => {
-  //   if (typingUsers.length === 0) return null;
-  //   console.log(typingUsers);
-
-  //   const typingUsernames = typingUsers.map((user) => user.name.userUid);
-  //   const typingMessage =
-  //     typingUsernames.length === 1
-  //       ? `${typingUsernames[0]}님이 채팅을 입력하고 있습니다...`
-  //       : `${typingUsernames.join(", ")}님이 채팅을 입력하고 있습니다...`;
-
-  //   return <span>{typingMessage}</span>;
-  // };
-
   const renderTypingUsers = (typingUsers) => {
     // 현재 채팅방과 일치하는 유저들만 보여줌
     const usersInCurrentRoom = typingUsers.filter((user) => user.chatRoomId === currentChatRoom.id);

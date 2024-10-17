@@ -68,13 +68,14 @@ const ChatRooms = () => {
 
   const addNotificationListner = (chatRoomId) => {
     onValue(child(messagesRef, chatRoomId), (DataSnapshot) => {
-      if (currentChatRoom) {
+      if (currentChatRoom && chatRoomId !== currentChatRoom.id) {
         handleNotification(chatRoomId, currentChatRoom.id, notifications, DataSnapshot);
       }
     });
   };
 
   const handleNotification = (chatRoomId, currentChatRoomId, notifications, DataSnapshot) => {
+    let lastTotal = 0;
     let index = notifications.findIndex((notification) => notification.id === chatRoomId);
 
     if (index === -1) {
@@ -86,7 +87,7 @@ const ChatRooms = () => {
       });
     } else {
       if (chatRoomId !== currentChatRoomId) {
-        let lastTotal = notifications[index].lastKnowTotal;
+        lastTotal = notifications[index].lastKnowTotal;
         if (DataSnapshot.size - lastTotal > 0) {
           notifications[index].count = DataSnapshot.size - lastTotal;
         }
@@ -122,6 +123,7 @@ const ChatRooms = () => {
     dispatch(setCurrentChatRoom(room));
     dispatch(setPrivateChatRoom(false));
     setActiveChatRoomId(room.id);
+
     clearNotifications(room);
 
     addNotificationListner(room.id);
@@ -150,9 +152,11 @@ const ChatRooms = () => {
           }}
         >
           # {room.name}
-          <Badge style={{ float: "right", marginRight: "4px" }} bg="danger">
-            {getNotificationCount(room)}
-          </Badge>
+          {room.id !== currentChatRoom.id && (
+            <Badge style={{ float: "right", marginRight: "4px" }} bg="danger">
+              {getNotificationCount(room)}
+            </Badge>
+          )}
         </li>
       ))
     );
@@ -172,7 +176,9 @@ const ChatRooms = () => {
         CHAT ROOMS {`(${chatRooms.length})`}
         <FaPlus onClick={() => setShow(!show)} style={{ position: "absolute", right: 0, cursor: "pointer" }} />
       </div>
-      <ul style={{ listStyleType: "none", padding: 0 }}>{renderChatRooms()}</ul>
+
+      <ul style={{ listStyleType: "none", padding: 0 }}>{renderChatRooms(chatRooms)}</ul>
+
       <Modal show={show} onHide={() => setShow(false)}>
         <Modal.Header closeButton>
           <Modal.Title>채팅 방 생성하기</Modal.Title>

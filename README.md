@@ -21,6 +21,32 @@
 - firebase, vite
 - react.js, javascript
 
+# 프로젝트 리뷰
+
+### 개선한 부분
+
+1. 이미지 업로드시 autoscroll시 적용되지 않음.  
+   => (onLoad를 활용해 이미지 로드시 autoscroll 되도록 수정)
+2. 메세지 입력후 enter키 입력 시 줄바꿈이 됨.  
+   => enter키로 메세지를 보내지도록 수정 (onKeyDown 사용)  
+   => shift + enter 입력시 줄바꿈 되도록 수정
+3. 메세지 내용이 줄바꿈 되도록 변경 (textarea의 줄바꿈을 /n에서 <br>로 변경)
+4. 오토스크롤이 typing시 자동으로 제일 밑까지 안내려감  
+   => typing시 안내 메세지를 span이 아닌 div로 바꿔서 해결
+5. 방 이동시 textarea 비워주기  
+   => useEffect로 새로운 방으로 이동시 setContent를 빈 문자로 바꿔줘기
+6. 각각 방에서 typing중인 인원이 나오도록 변경
+7. 여러명이 채팅 입력시 채팅중인 인원 한줄로 출력되도록 변경
+8. 안 읽은 메세지 개수 보여주기
+
+# 개선해야할 점
+
+1. 왼쪽 사이드 패널 하이라이트 적절히 설정(favorite과 chatroom 동기화, directMessage 클릭시 chatroom 비활성화)
+2. 안 읽은 메세지 알림 오류
+3. firebase rules problem
+
+# 프로젝트 느낀점
+
 ### 파일 구조
 
 ```
@@ -76,22 +102,3 @@ npm install @reduxjs/toolkit bootstrap firebase md5 moment react-bootstrap react
 npm run build
 firebase deploy
 ```
-
-# 프로젝트 개선한 부분
-
-1. 이미지 업로드시 autoscroll시 적용되지 않음. (onLoad를 활용해 이미지 로드시 autoscroll 되도록 수정)
-2. 메세지 입력후 enter키 입력시 메세지 보내지도록 수정 (onKeyDown 사용)
-3. shift + enter 입력시 줄바꿈 되도록 수정
-4. 메세지 내용이 줄바꿈 되도록 변경 (/n을 <br>로 변경)
-5. 오토스크롤이 typing시 자동으로 제일 밑까지 안내려감
-   - typing시 안내 메세지를 span이 아닌 div로 바꿔서 해결
-6. 방 이동시 textarea 비워주기
-   - useEffect로 새로운 방으로 이동시 setContent를 빈 문자로 바꿔줘기
-
-# 개선해야할 점
-
-2.  typing 지우기
-3.  여러명이 typing 시 (test4님이 채팅을 입력하고 있습니다...test2님이 채팅을 입력하고 있습니다...) 수정하기
-4.  왼쪽 사이드 패널 하이라이트 적절히 설정(favorite과 chatroom 동기화, directMessage 클릭시 chatroom 비활성화)
-5.  내가 읽은 부분 표시 안읽은 메세지 개수 보여주기
-6.  firebase rules problem
